@@ -30,19 +30,29 @@ const getUser = async () => {
 const LoginPage = () => {
   const { isAllowed } = usePermissions();
   const { setUser, logout: logoutFromStore } = useAuthStore();
+
   const { refetch } = useQuery({
     queryKey: ['self'],
     queryFn: getUser,
     enabled: false,
   });
+
+  const { mutate: logoutMutate } = useMutation({
+    mutationKey: ['logout'],
+    mutationFn: logout,
+    onSuccess: async () => {
+      logoutFromStore();
+      return;
+    },
+  });
+
   const { mutate, isPending, isError, error } = useMutation({
     mutationKey: ['login'],
     mutationFn: loginUser,
     onSuccess: async () => {
       const selfDataPromise = await refetch();
       if (!isAllowed(selfDataPromise.data)) {
-        await logout();
-        logoutFromStore();
+        logoutMutate();
         return;
       }
 
