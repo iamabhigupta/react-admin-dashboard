@@ -14,21 +14,21 @@ import Logo from '../../components/icons/Logo';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Credentials } from '../../types';
 import { login, self } from '../../http/api';
+import { useAuthStore } from '../../store';
 
 const loginUser = async (credentials: Credentials) => {
   const { data } = await login(credentials);
-  console.log('Data', data);
   return data;
 };
 
 const getUser = async () => {
   const { data } = await self();
-  console.log('Data', data);
   return data;
 };
 
 const LoginPage = () => {
-  const { data: selfData, refetch } = useQuery({
+  const { setUser } = useAuthStore();
+  const { refetch } = useQuery({
     queryKey: ['self'],
     queryFn: getUser,
     enabled: false,
@@ -36,10 +36,10 @@ const LoginPage = () => {
   const { mutate, isPending, isError, error } = useMutation({
     mutationKey: ['login'],
     mutationFn: loginUser,
-    onSuccess: () => {
-      refetch();
-      console.log('selfData', selfData);
-      console.log('Success');
+    onSuccess: async () => {
+      const selfDataPromise = await refetch();
+      setUser(selfDataPromise.data);
+      console.log('selfData', selfDataPromise.data);
     },
   });
 
