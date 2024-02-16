@@ -6,12 +6,15 @@ interface Tenant {
   name: string;
   address: string;
 }
+
+type Roles = 'customer' | 'admin' | 'manager';
+
 export interface User {
   id: number;
   firstName: string;
   lastName: string;
   email: string;
-  role: string;
+  role: Roles;
   tenant?: Tenant;
 }
 
@@ -21,7 +24,7 @@ interface AuthState {
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>(
+export const useAuthStore = create<AuthState>()(
   devtools((set) => ({
     user: null,
     setUser: (user) => set({ user: user }),

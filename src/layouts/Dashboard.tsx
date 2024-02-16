@@ -52,6 +52,7 @@ const items = [
 ];
 
 const Dashboard = () => {
+  const { user } = useAuthStore();
   const { logout: logoutFromStore } = useAuthStore();
 
   const { mutate: logoutMutate } = useMutation({
@@ -62,8 +63,6 @@ const Dashboard = () => {
       return;
     },
   });
-
-  const { user } = useAuthStore();
 
   const [collapsed, setCollapsed] = useState(false);
   const {
@@ -104,7 +103,9 @@ const Dashboard = () => {
           >
             <Flex gap="middle" align="center" justify="space-between">
               <Badge
-                count="Bandra, Mumbai"
+                count={
+                  user.role === 'admin' ? 'You are an admin' : user.tenant?.name
+                }
                 color="#ffe3cd"
                 style={{ color: '#ff6f00', fontWeight: '500' }}
               />
