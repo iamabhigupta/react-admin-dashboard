@@ -5,21 +5,21 @@ import { useAuthStore } from '../store';
 import { useEffect } from 'react';
 import { AxiosError } from 'axios';
 
-const getUser = async () => {
+const getSelf = async () => {
   const { data } = await self();
   return data;
 };
 
 const Root = () => {
   const { setUser } = useAuthStore();
+
   const { data, isLoading } = useQuery({
     queryKey: ['self'],
-    queryFn: getUser,
+    queryFn: getSelf,
     retry: (failureCount: number, error) => {
       if (error instanceof AxiosError && error.response?.status === 401) {
         return false;
       }
-
       return failureCount < 3;
     },
   });
@@ -30,9 +30,9 @@ const Root = () => {
     }
   }, [data, setUser]);
 
-  //   setUser()
-
-  if (isLoading) return 'Loading...';
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return <Outlet />;
 };
